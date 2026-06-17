@@ -4,9 +4,6 @@ let aliasMap = {};
 const input = document.getElementById("search");
 const resultBox = document.getElementById("result");
 
-/* -----------------------------
-   데이터 + 매핑 로딩
------------------------------ */
 Promise.all([
   fetch("./data.json").then(r => r.json()),
   fetch("./mapping.json").then(r => r.json())
@@ -14,13 +11,10 @@ Promise.all([
   data = d || [];
   aliasMap = m || {};
   showRecent();
-}).catch(err => {
-  console.error("로딩 실패:", err);
-  resultBox.innerHTML = "<p>데이터 로딩 실패</p>";
 });
 
 /* -----------------------------
-   normalize (띄어쓰기 무시 + 소문자 + 특수문자 제거)
+   normalize
 ----------------------------- */
 function normalize(text) {
   return (text || "")
@@ -42,7 +36,7 @@ function showRecent() {
 }
 
 /* -----------------------------
-   검색 로직 (alias + title 매칭)
+   검색 (정상 + alias 지원)
 ----------------------------- */
 function showSearch(q) {
   let nq = normalize(q);
@@ -52,19 +46,26 @@ function showSearch(q) {
     return;
   }
 
-  let matchedKeys = Object.keys(aliasMap).filter(key => {
-    let normKey = normalize(key);
-
-    return (
-      normKey.includes(nq) ||
-      (aliasMap[key] || []).some(a => normalize(a).includes(nq))
-    );
-  });
-
   let filtered = data.filter(item => {
     let title = normalize(item.title);
 
-    return matchedKeys.some(k => normalize(k).includes(title));
+    // 1. 제목 직접 검색
+    if (title.includes(nq)) return true;
+
+    // 2. alias 검색
+    for (let key in aliasMap) {
+      let aliases = aliasMap[key] || [];
+
+      if (
+        normalize(key).includes(nq) ||
+        aliases.some(a => normalize(a).includes(nq))
+      ) {
+        // key가 해당 item title과 매칭되는 경우만 통과
+        if (title.includes(normalize(key))) return true;
+      }
+    }
+
+    return false;
   });
 
   resultBox.innerHTML = filtered.map(item => `
@@ -76,7 +77,7 @@ function showSearch(q) {
 }
 
 /* -----------------------------
-   입력 (debounce)
+   input debounce
 ----------------------------- */
 let timer;
 
