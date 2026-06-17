@@ -24,6 +24,31 @@ function normalize(text) {
 }
 
 /* -----------------------------
+   alias → 정식 이름 변환
+----------------------------- */
+function resolveAlias(q) {
+  let nq = normalize(q);
+
+  for (let key in aliasMap) {
+    let aliases = aliasMap[key] || [];
+
+    // 정식 이름 직접 매칭
+    if (normalize(key).includes(nq)) {
+      return key;
+    }
+
+    // alias 매칭
+    for (let a of aliases) {
+      if (normalize(a).includes(nq)) {
+        return key; // 핵심: 정식 이름 반환
+      }
+    }
+  }
+
+  return q; // 없으면 그대로
+}
+
+/* -----------------------------
    최근 30개
 ----------------------------- */
 function showRecent() {
@@ -36,37 +61,15 @@ function showRecent() {
 }
 
 /* -----------------------------
-   검색 (정상 + alias 지원)
+   검색
 ----------------------------- */
 function showSearch(q) {
-  let nq = normalize(q);
+  let resolved = resolveAlias(q);
+  let nq = normalize(resolved);
 
-  if (!nq) {
-    showRecent();
-    return;
-  }
-
-  let filtered = data.filter(item => {
-    let title = normalize(item.title);
-
-    // 1. 제목 직접 검색
-    if (title.includes(nq)) return true;
-
-    // 2. alias 검색
-    for (let key in aliasMap) {
-      let aliases = aliasMap[key] || [];
-
-      if (
-        normalize(key).includes(nq) ||
-        aliases.some(a => normalize(a).includes(nq))
-      ) {
-        // key가 해당 item title과 매칭되는 경우만 통과
-        if (title.includes(normalize(key))) return true;
-      }
-    }
-
-    return false;
-  });
+  let filtered = data.filter(item =>
+    normalize(item.title).includes(nq)
+  );
 
   resultBox.innerHTML = filtered.map(item => `
     <div class="card">
@@ -77,7 +80,7 @@ function showSearch(q) {
 }
 
 /* -----------------------------
-   input debounce
+   input (debounce)
 ----------------------------- */
 let timer;
 
