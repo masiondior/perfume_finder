@@ -1,5 +1,6 @@
 let data = [];
-let searchAliasMap = {};
+let searchAliasMap = {};  // 원래이름 → [별명들]
+let aliasToRealMap = {};  // 별명 → 원래이름
 
 const input = document.getElementById("search");
 const resultBox = document.getElementById("result");
@@ -11,6 +12,7 @@ Promise.all([
   .then(([json, mapping]) => {
     data = json || [];
     searchAliasMap = buildSearchAliasMap(mapping);
+    aliasToRealMap = buildAliasToRealMap(mapping);
     showRecent();
   })
   .catch(err => {
@@ -24,6 +26,7 @@ function normalize(text) {
     .replace(/\s+/g, "");
 }
 
+// 원래이름 → [별명들]
 function buildSearchAliasMap(mapping) {
   const map = {};
   for (const [realName, aliases] of Object.entries(mapping)) {
@@ -32,14 +35,44 @@ function buildSearchAliasMap(mapping) {
   return map;
 }
 
-function getMatchedAliases(nq) {
-  const aliases = [];
-  for (const [normalizedReal, normalizedAliases] of Object.entries(searchAliasMap)) {
-    if (normalizedReal.includes(nq)) {
-      aliases.push(...normalizedAliases);
+// 별명 → 원래이름
+function buildAliasToRealMap(mapping) {
+  const map = {};
+  for (const [realName, aliases] of Object.entries(mapping)) {
+    for (const alias of aliases) {
+      map[normalize(alias)] = normalize(realName);
     }
   }
-  return aliases;
+  return map;
+}
+
+// 검색어로부터 같이 찾아야 할 모든 키워드 수집
+function resolveQueryTerms(nq) {
+  const terms = new Set([nq]);
+
+  // 1. 검색어가 별명이면 → 원래 이름 추가
+  for (const [normalizedAlias, normalizedReal] of Object.entries(aliasToRealMap)) {
+    if (normalizedAlias.includes(nq)) {
+      terms.add(normalizedReal);
+    }
+  }
+
+  // 2. 수집된 원래 이름들의 다른 별명도 모두 추가
+  for (const term of terms) {
+    if (searchAliasMap[term]) {
+      searchAliasMap[term].forEach(a => terms.add(a));
+    }
+  }
+
+  // 3. 검색어가 원래 이름에 포함되면 → 그 별명들도 추가
+  for (const [normalizedReal, aliases] of Object.entries(searchAliasMap)) {
+    if (normalizedReal.includes(nq)) {
+      terms.add(normalizedReal);
+      aliases.forEach(a => terms.add(a));
+    }
+  }
+
+  return terms;
 }
 
 function showRecent() {
@@ -58,11 +91,11 @@ function showSearch(q) {
     return;
   }
 
-  const extraAliases = getMatchedAliases(nq);
+  const terms = resolveQueryTerms(nq);
 
   let filtered = data.filter(item => {
     const nt = normalize(item.title);
-    return nt.includes(nq) || extraAliases.some(alias => nt.includes(alias));
+    return [...terms].some(term => nt.includes(term));
   });
 
   resultBox.innerHTML = filtered.map(item => `
