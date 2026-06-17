@@ -1,55 +1,30 @@
 let data = [];
-let aliasMap = {};
 
 const input = document.getElementById("search");
 const resultBox = document.getElementById("result");
 
-Promise.all([
-  fetch("./data.json").then(r => r.json()),
-  fetch("./mapping.json").then(r => r.json())
-]).then(([d, m]) => {
-  data = d || [];
-  aliasMap = m || {};
-  showRecent();
-});
+fetch("./data.json")
+  .then(res => res.json())
+  .then(json => {
+    data = json || [];
+    showRecent();
+  })
+  .catch(err => {
+    console.error("data.json 로드 실패:", err);
+    resultBox.innerHTML = "<p>데이터 로딩 실패</p>";
+  });
 
 /* -----------------------------
-   normalize
+   문자열 정규화 (띄어쓰기 무시 + 소문자)
 ----------------------------- */
 function normalize(text) {
   return (text || "")
     .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/[\u200B-\u200D\uFEFF]/g, "");
+    .replace(/\s+/g, "");
 }
 
 /* -----------------------------
-   alias → 정식 이름 변환
------------------------------ */
-function resolveAlias(q) {
-  let nq = normalize(q);
-
-  for (let key in aliasMap) {
-    let aliases = aliasMap[key] || [];
-
-    // 정식 이름 직접 매칭
-    if (normalize(key).includes(nq)) {
-      return key;
-    }
-
-    // alias 매칭
-    for (let a of aliases) {
-      if (normalize(a).includes(nq)) {
-        return key; // 핵심: 정식 이름 반환
-      }
-    }
-  }
-
-  return q; // 없으면 그대로
-}
-
-/* -----------------------------
-   최근 30개
+   최근 30개 표시
 ----------------------------- */
 function showRecent() {
   resultBox.innerHTML = data.slice(0, 30).map(item => `
@@ -61,11 +36,15 @@ function showRecent() {
 }
 
 /* -----------------------------
-   검색
+   검색 (전체 결과 + 공백 무시)
 ----------------------------- */
 function showSearch(q) {
-  let resolved = resolveAlias(q);
-  let nq = normalize(resolved);
+  let nq = normalize(q);
+
+  if (!nq) {
+    showRecent();
+    return;
+  }
 
   let filtered = data.filter(item =>
     normalize(item.title).includes(nq)
@@ -80,7 +59,7 @@ function showSearch(q) {
 }
 
 /* -----------------------------
-   input (debounce)
+   입력 이벤트 (debounce)
 ----------------------------- */
 let timer;
 
@@ -88,6 +67,7 @@ input.addEventListener("input", (e) => {
   clearTimeout(timer);
 
   timer = setTimeout(() => {
-    showSearch(e.target.value);
+    let q = e.target.value;
+    showSearch(q);
   }, 150);
 });
