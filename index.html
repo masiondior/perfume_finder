@@ -3,12 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Perfume Log</title>
-
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="wrap">
@@ -19,7 +16,15 @@
   </header>
 
   <div class="search-box">
-    <input id="search" type="text" placeholder="향수 이름을 입력하세요" autocomplete="off">
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="향수 이름을 입력하세요" autocomplete="off">
+      <button id="clear-btn" onclick="clearSearch()">✕</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <p id="count"></p>
+    <button id="random-btn" onclick="openRandom()">🎲 랜덤 시향기</button>
   </div>
 
   <div id="result" class="grid"></div>
