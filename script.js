@@ -1,9 +1,11 @@
 let data = [];
-let searchAliasMap = {};  // 원래이름 → [별명들]
-let aliasToRealMap = {};  // 별명 → 원래이름
+let searchAliasMap = {};
+let aliasToRealMap = {};
 
 const input = document.getElementById("search");
 const resultBox = document.getElementById("result");
+const clearBtn = document.getElementById("clear-btn");
+const countEl = document.getElementById("count");
 
 Promise.all([
   fetch("./data.json").then(r => r.json()),
@@ -26,7 +28,6 @@ function normalize(text) {
     .replace(/\s+/g, "");
 }
 
-// 원래이름 → [별명들]
 function buildSearchAliasMap(mapping) {
   const map = {};
   for (const [realName, aliases] of Object.entries(mapping)) {
@@ -35,7 +36,6 @@ function buildSearchAliasMap(mapping) {
   return map;
 }
 
-// 별명 → 원래이름
 function buildAliasToRealMap(mapping) {
   const map = {};
   for (const [realName, aliases] of Object.entries(mapping)) {
@@ -46,25 +46,21 @@ function buildAliasToRealMap(mapping) {
   return map;
 }
 
-// 검색어로부터 같이 찾아야 할 모든 키워드 수집
 function resolveQueryTerms(nq) {
   const terms = new Set([nq]);
 
-  // 1. 검색어가 별명이면 → 원래 이름 추가
   for (const [normalizedAlias, normalizedReal] of Object.entries(aliasToRealMap)) {
     if (normalizedAlias.includes(nq)) {
       terms.add(normalizedReal);
     }
   }
 
-  // 2. 수집된 원래 이름들의 다른 별명도 모두 추가
   for (const term of terms) {
     if (searchAliasMap[term]) {
       searchAliasMap[term].forEach(a => terms.add(a));
     }
   }
 
-  // 3. 검색어가 원래 이름에 포함되면 → 그 별명들도 추가
   for (const [normalizedReal, aliases] of Object.entries(searchAliasMap)) {
     if (normalizedReal.includes(nq)) {
       terms.add(normalizedReal);
@@ -75,7 +71,32 @@ function resolveQueryTerms(nq) {
   return terms;
 }
 
+function fuzzyMatch(title, query) {
+  let ti = 0;
+  let qi = 0;
+  while (ti < title.length && qi < query.length) {
+    if (title[ti] === query[qi]) qi++;
+    ti++;
+  }
+  return qi === query.length;
+}
+
+function openRandom() {
+  if (!data.length) return;
+  const item = data[Math.floor(Math.random() * data.length)];
+  window.open(item.url, "_blank");
+}
+
+function clearSearch() {
+  input.value = "";
+  clearBtn.style.display = "none";
+  countEl.textContent = "";
+  showRecent();
+}
+
 function showRecent() {
+  const shown = Math.min(data.length, 30);
+  countEl.textContent = `최근 ${shown}개`;
   resultBox.innerHTML = data.slice(0, 30).map(item => `
     <div class="card">
       <a href="${item.url}" target="_blank">${item.title}</a>
@@ -87,23 +108,31 @@ function showRecent() {
 function showSearch(q) {
   let nq = normalize(q);
   if (!nq) {
+    clearBtn.style.display = "none";
+    countEl.textContent = "";
     showRecent();
     return;
   }
+
+  clearBtn.style.display = "block";
 
   const terms = resolveQueryTerms(nq);
 
   let filtered = data.filter(item => {
     const nt = normalize(item.title);
-    return [...terms].some(term => nt.includes(term));
+    return [...terms].some(term => nt.includes(term)) || fuzzyMatch(nt, nq);
   });
 
-  resultBox.innerHTML = filtered.map(item => `
-    <div class="card">
-      <a href="${item.url}" target="_blank">${item.title}</a>
-      <p>${item.content ? item.content.slice(0, 80) : ""}</p>
-    </div>
-  `).join("");
+  countEl.textContent = `검색 결과 ${filtered.length}개`;
+
+  resultBox.innerHTML = filtered.length
+    ? filtered.map(item => `
+        <div class="card">
+          <a href="${item.url}" target="_blank">${item.title}</a>
+          <p>${item.content ? item.content.slice(0, 80) : ""}</p>
+        </div>
+      `).join("")
+    : "<p class='no-result'>검색 결과가 없습니다.</p>";
 }
 
 let timer;
