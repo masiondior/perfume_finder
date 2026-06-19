@@ -133,3 +133,21 @@ input:focus {
   color: #aaa;
   margin-top: 6px;
 }
+#top-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #1c2430;
+  border: 1px solid #1f2a36;
+  color: #7db7ff;
+  font-size: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#top-btn:hover {
+  background: #243040;
+}
