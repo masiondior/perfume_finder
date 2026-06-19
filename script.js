@@ -143,3 +143,12 @@ input.addEventListener("input", (e) => {
     showSearch(q);
   }, 150);
 });
+const topBtn = document.getElementById("top-btn");
+
+window.addEventListener("scroll", () => {
+  topBtn.style.display = window.scrollY > 300 ? "block" : "none";
+});
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
