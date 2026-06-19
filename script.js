@@ -6,6 +6,7 @@ const input = document.getElementById("search");
 const resultBox = document.getElementById("result");
 const clearBtn = document.getElementById("clear-btn");
 const countEl = document.getElementById("count");
+const topBtn = document.getElementById("top-btn");
 
 Promise.all([
   fetch("./data.json").then(r => r.json()),
@@ -94,6 +95,15 @@ function clearSearch() {
   showRecent();
 }
 
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+window.addEventListener("scroll", () => {
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+  topBtn.style.display = scrollY > 300 ? "block" : "none";
+});
+
 function showRecent() {
   const shown = Math.min(data.length, 30);
   countEl.textContent = `최근 ${shown}개`;
@@ -143,12 +153,3 @@ input.addEventListener("input", (e) => {
     showSearch(q);
   }, 150);
 });
-const topBtn = document.getElementById("top-btn");
-
-window.addEventListener("scroll", () => {
-  topBtn.style.display = window.scrollY > 300 ? "block" : "none";
-});
-
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
