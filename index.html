@@ -24,7 +24,10 @@
 
   <div class="toolbar">
     <p id="count"></p>
-    <button id="random-btn" onclick="openRandom()">🎲 랜덤 시향기</button>
+    <div style="display: flex; gap: 8px;">
+      <button id="checklist-btn" onclick="location.href='checklist.html'">✓ 체크리스트</button>
+      <button id="random-btn" onclick="openRandom()">🎲 랜덤 시향기</button>
+    </div>
   </div>
 
   <div id="result" class="grid"></div>
