@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시향 체크리스트 | Perfume Log</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="checklist.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <h1>시향 체크리스트</h1>
+    <p><a href="index.html">← Perfume Log로 돌아가기</a></p>
+  </header>
+
+  <div class="input-row">
+    <input id="perfume-input" type="text" placeholder="향수 이름 입력..." autocomplete="off" />
+    <button onclick="addItem()">+</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('all', this)">전체</button>
+    <button class="tab" onclick="setTab('todo', this)">미시향</button>
+    <button class="tab" onclick="setTab('done', this)">시향 완료</button>
+  </div>
+
+  <p id="count" class="count"></p>
+
+  <div id="list"></div>
+
+</div>
+
+<script src="checklist.js"></script>
+
+</body>
+</html>
