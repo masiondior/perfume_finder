@@ -8,6 +8,7 @@ BASE_URL = "https://gall.dcinside.com/mgallery/board/lists/"
 GALLERY_ID = "hyang"
 HEADID = "20"
 MAX_PAGE = 6000
+STOP_THRESHOLD = 3
 
 headers = {
     "User-Agent": "Mozilla/5.0"
@@ -29,9 +30,11 @@ except FileNotFoundError:
     existing = []
     print("기존 data.json 없음, 새로 생성합니다")
 
+# 기존 URL을 seen에 미리 등록 (중복 방지)
 seen = set(clean_url(item["url"]) for item in existing)
 new_posts = []
 stop = False
+consecutive_seen = 0
 
 for page in range(1, MAX_PAGE + 1):
 
@@ -80,10 +83,14 @@ for page in range(1, MAX_PAGE + 1):
             href = clean_url(href)
 
             if href in seen:
-                print(f"기존 글 발견, 수집 중단 ({page}페이지)")
-                stop = True
-                break
+                consecutive_seen += 1
+                if consecutive_seen >= STOP_THRESHOLD:
+                    print(f"기존 글 {STOP_THRESHOLD}개 연속 발견, 수집 중단 ({page}페이지)")
+                    stop = True
+                    break
+                continue
 
+            consecutive_seen = 0
             new_posts.append({"title": title, "url": href})
             seen.add(href)
             count += 1
@@ -94,7 +101,10 @@ for page in range(1, MAX_PAGE + 1):
     except Exception as e:
         print(f"{page} 오류: {e}")
 
-posts = new_posts + existing
+# 기존 데이터에서 new_posts와 중복된 항목 제거 후 합치기
+new_urls = set(p["url"] for p in new_posts)
+existing_deduped = [item for item in existing if clean_url(item["url"]) not in new_urls]
+posts = new_posts + existing_deduped
 
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(posts, f, ensure_ascii=False, indent=2)
