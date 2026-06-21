@@ -151,3 +151,16 @@ input:focus {
 #top-btn:hover {
   background: #243040;
 }
+#checklist-btn {
+  background: #1c2430;
+  border: 1px solid #1f2a36;
+  color: #7db7ff;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#checklist-btn:hover {
+  background: #243040;
+}
