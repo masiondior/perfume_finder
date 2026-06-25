@@ -90,7 +90,7 @@ input:focus {
   margin: 0;
 }
 
-#random-btn {
+.toolbar button {
   background: #1c2430;
   border: 1px solid #1f2a36;
   color: #7db7ff;
@@ -100,7 +100,7 @@ input:focus {
   cursor: pointer;
 }
 
-#random-btn:hover {
+.toolbar button:hover {
   background: #243040;
 }
 
@@ -133,6 +133,7 @@ input:focus {
   color: #aaa;
   margin-top: 6px;
 }
+
 #top-btn {
   display: none;
   position: fixed;
@@ -151,16 +152,9 @@ input:focus {
 #top-btn:hover {
   background: #243040;
 }
-#checklist-btn {
-  background: #1c2430;
-  border: 1px solid #1f2a36;
-  color: #7db7ff;
-  font-size: 13px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
 
-#checklist-btn:hover {
-  background: #243040;
+header a {
+  color: #7db7ff;
+  text-decoration: none;
+  font-size: 13px;
 }
