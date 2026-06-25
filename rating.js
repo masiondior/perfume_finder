@@ -45,7 +45,16 @@ document.getElementById('search').addEventListener('input', e => {
 function getAvg(ratings) {
   if (!ratings || !Object.keys(ratings).length) return 0;
   const vals = Object.values(ratings);
-  return (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1);
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+  return Math.round(avg);
+}
+
+function renderStars(score, id, clickable) {
+  return [1,2,3,4,5].map(n => `
+    <button class="star ${n <= score ? 'filled' : ''}"
+      ${clickable ? `onclick="rate('${id}', ${n})"` : 'disabled'}
+      style="${!clickable ? 'cursor:default; opacity:0.6;' : ''}">★</button>
+  `).join('');
 }
 
 function render() {
@@ -81,18 +90,23 @@ function render() {
     const count = Object.keys(ratings).length;
     const myRating = uid ? (ratings[uid] || 0) : 0;
 
-    const stars = [1,2,3,4,5].map(n => `
-      <button class="star ${n <= myRating ? 'mine' : n <= avg ? 'filled' : ''}"
-        onclick="rate('${p.id}', ${n})">★</button>
-    `).join('');
-
     return `
       <div class="perfume-card">
         <div class="brand">${p.brand}</div>
         <div class="pname">${p.name}</div>
-        <div class="stars">
-          ${stars}
-          <span class="rating-info">${avg > 0 ? `${avg} (${count}명)` : '평점 없음'}</span>
+        <div class="rating-row">
+          <span class="rating-label">내 평점</span>
+          <div class="stars ${myRating ? 'mine' : ''}">
+            ${renderStars(myRating, p.id, true)}
+          </div>
+          ${myRating ? `<span class="rating-info">${myRating}점</span>` : '<span class="rating-info">미평가</span>'}
+        </div>
+        <div class="rating-row">
+          <span class="rating-label">전체 평점</span>
+          <div class="stars">
+            ${renderStars(avg, p.id, false)}
+          </div>
+          <span class="rating-info">${avg > 0 ? `${avg}점 (${count}명)` : '평점 없음'}</span>
         </div>
       </div>
     `;
@@ -129,7 +143,7 @@ function closeModal() {
 
 function renderModalStars() {
   document.getElementById('modal-stars').innerHTML = [1,2,3,4,5].map(n => `
-    <button class="star ${n <= modalStar ? 'mine' : ''}"
+    <button class="star ${n <= modalStar ? 'filled' : ''}"
       onclick="setModalStar(${n})">★</button>
   `).join('');
 }
