@@ -1,0 +1,207 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+#add-btn {
+  background: #1c2430;
+  border: 1px solid #1f2a36;
+  color: #7db7ff;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#add-btn:hover {
+  background: #243040;
+}
+
+#count {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+#clear-btn {
+  display: none;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+#clear-btn:hover {
+  color: #ccc;
+}
+
+.perfume-card {
+  background: #141a22;
+  border: 1px solid #1f2a36;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+.perfume-card .brand {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.perfume-card .pname {
+  font-size: 16px;
+  color: #e6e6e6;
+  margin-bottom: 10px;
+}
+
+.stars {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.star {
+  font-size: 22px;
+  cursor: pointer;
+  color: #2a3a4a;
+  transition: color 0.1s;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.star.filled {
+  color: #f5c518;
+}
+
+.star.mine {
+  color: #f5c518;
+}
+
+.rating-info {
+  font-size: 12px;
+  color: #888;
+  margin-left: 8px;
+}
+
+/* 모달 */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: #141a22;
+  border: 1px solid #1f2a36;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #e6e6e6;
+}
+
+.modal input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #1f2a36;
+  background: #0f1419;
+  color: white;
+  font-size: 15px;
+  margin-bottom: 10px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.modal-stars {
+  display: flex;
+  gap: 4px;
+  margin: 8px 0 12px;
+}
+
+.modal-stars .star {
+  font-size: 28px;
+}
+
+.error {
+  font-size: 13px;
+  color: #ff6b6b;
+  margin-bottom: 10px;
+  min-height: 18px;
+}
+
+.modal-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modal-btns button {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid #1f2a36;
+  background: #1c2430;
+  color: #e6e6e6;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modal-btns button.primary {
+  background: #1a3a5a;
+  color: #7db7ff;
+  border-color: #2a5a8a;
+}
+
+.modal-btns button:hover {
+  background: #243040;
+}
+
+.no-result {
+  font-size: 14px;
+  color: #888;
+}
+
+header a {
+  color: #7db7ff;
+  text-decoration: none;
+  font-size: 13px;
+}
+.add-suggest-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #1f2a36;
+  background: #1c2430;
+  color: #7db7ff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.add-suggest-btn:hover {
+  background: #243040;
+}

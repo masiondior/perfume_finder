@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>향수 평점 | Perfume Log</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="rating.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <h1>향수 평점</h1>
+    <p><a href="index.html">← Perfume Log로 돌아가기</a></p>
+  </header>
+
+  <div class="search-box">
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="브랜드 또는 향수 이름 검색..." autocomplete="off">
+      <button id="clear-btn" onclick="clearSearch()">✕</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <p id="count"></p>
+  </div>
+
+  <div id="result"></div>
+
+</div>
+
+<!-- 향수 추가 모달 -->
+<div id="modal" class="modal-overlay" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>향수 추가</h2>
+    <input id="modal-brand" type="text" placeholder="브랜드 이름" autocomplete="off">
+    <input id="modal-name" type="text" placeholder="향수 이름" autocomplete="off">
+    <div class="modal-stars" id="modal-stars"></div>
+    <p id="modal-error" class="error"></p>
+    <div class="modal-btns">
+      <button onclick="closeModal()">취소</button>
+      <button class="primary" onclick="addPerfume()">추가</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
+<script src="rating.js"></script>
+
+</body>
+</html>
