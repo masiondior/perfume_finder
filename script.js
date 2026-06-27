@@ -8,6 +8,15 @@ const clearBtn = document.getElementById("clear-btn");
 const countEl = document.getElementById("count");
 const topBtn = document.getElementById("top-btn");
 
+function escapeHtml(str) {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 Promise.all([
   fetch("./data.json").then(r => r.json()),
   fetch("./mapping.json").then(r => r.json())
@@ -109,8 +118,8 @@ function showRecent() {
   countEl.textContent = `최근 ${shown}개`;
   resultBox.innerHTML = data.slice(0, 30).map(item => `
     <div class="card">
-      <a href="${item.url}" target="_blank">${item.title}</a>
-      <p>${item.content ? item.content.slice(0, 80) : ""}</p>
+      <a href="${escapeHtml(item.url)}" target="_blank">${escapeHtml(item.title)}</a>
+      <p>${escapeHtml(item.content ? item.content.slice(0, 80) : "")}</p>
     </div>
   `).join("");
 }
@@ -138,8 +147,8 @@ function showSearch(q) {
   resultBox.innerHTML = filtered.length
     ? filtered.map(item => `
         <div class="card">
-          <a href="${item.url}" target="_blank">${item.title}</a>
-          <p>${item.content ? item.content.slice(0, 80) : ""}</p>
+          <a href="${escapeHtml(item.url)}" target="_blank">${escapeHtml(item.title)}</a>
+          <p>${escapeHtml(item.content ? item.content.slice(0, 80) : "")}</p>
         </div>
       `).join("")
     : "<p class='no-result'>검색 결과가 없습니다.</p>";
