@@ -1,5 +1,6 @@
 import json
 import time
+import html
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
@@ -21,6 +22,9 @@ def clean_url(href):
     clean_query = urlencode({k: v[0] for k, v in params.items()})
     return urlunparse(parsed._replace(query=clean_query))
 
+def sanitize(text):
+    return html.escape(text or "")
+
 # 기존 data.json 로드
 try:
     with open("data.json", "r", encoding="utf-8") as f:
@@ -30,7 +34,6 @@ except FileNotFoundError:
     existing = []
     print("기존 data.json 없음, 새로 생성합니다")
 
-# 기존 URL을 seen에 미리 등록 (중복 방지)
 seen = set(clean_url(item["url"]) for item in existing)
 new_posts = []
 stop = False
@@ -72,7 +75,7 @@ for page in range(1, MAX_PAGE + 1):
             if not title_tag:
                 continue
 
-            title = title_tag.get_text(" ", strip=True)
+            title = sanitize(title_tag.get_text(" ", strip=True))
             href = title_tag.get("href", "")
             if not href:
                 continue
